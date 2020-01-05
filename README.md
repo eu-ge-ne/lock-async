@@ -12,12 +12,37 @@ $ npm install @eu-ge-ne/lock-async
 
 ## Example
 
+Swap 2 values in async functions concurrently:
+
 ```js
-import { LockAsync} from "@eu-ge-ne/lock-async";
+import { LockAsync } from "@eu-ge-ne/lock-async";
 
 const lock = new LockAsync();
 
-await Lock.run(() => new Promise(resolve => setTimeout(resolve, 100)));
+const wait = () => new Promise(resolve => setTimeout(resolve, 10));
+
+let a = 1;
+let b = 2;
+
+const first = lock.run(async () => {
+    await wait();
+    const c = a;
+    await wait();
+    a = b;
+    await wait();
+    b = c;
+});
+
+const second = lock.run(async () => {
+    await wait();
+    const c = a;
+    await wait();
+    a = b;
+    await wait();
+    b = c;
+});
+
+await Promise.all([first, second]);
 ```
 
 ## API
