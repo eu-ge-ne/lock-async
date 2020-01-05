@@ -7,13 +7,13 @@ Dead simple async lock. Written in TypeScript. With [exponential backoff](https:
 ## Install
 
 ```bash
-$ npm install eu-ge-ne/lock-async
+$ npm install @eu-ge-ne/lock-async
 ```
 
 ## Example
 
 ```js
-import { LockAsync} from "eu-ge-ne/lock-async";
+import { LockAsync} from "@eu-ge-ne/lock-async";
 
 const lock = new LockAsync();
 
@@ -31,7 +31,7 @@ Constructor accepts following parameters:
  - `ceiling: number` (default = `10`)
 
 ```js
-import { LockAsync} from "eu-ge-ne/lock-async";
+import { LockAsync} from "@eu-ge-ne/lock-async";
 
 const lock1 = new LockAsync(3000, 1, 10);
 // or
@@ -41,7 +41,7 @@ const lock2 = new LockAsync();
 ### Run async function
 
 ```js
-import { LockAsync} from "eu-ge-ne/lock-async";
+import { LockAsync} from "@eu-ge-ne/lock-async";
 
 const lock = new LockAsync();
 
@@ -51,7 +51,7 @@ await Lock.run(() => new Promise(resolve => setTimeout(resolve, 100)));
 ### Get status
 
 ```js
-import { LockAsync} from "eu-ge-ne/lock-async";
+import { LockAsync} from "@eu-ge-ne/lock-async";
 
 const lock = new LockAsync();
 
