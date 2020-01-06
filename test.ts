@@ -39,6 +39,13 @@ test("Returns result", async t => {
     t.is(result, "Hello");
 });
 
+test("Returns async result", async t => {
+    const lock = t.context.lock;
+
+    const result = await lock.run(() => new Promise(resolve => setTimeout(() => resolve("Async Hello"), 100)));
+    t.is(result, "Async Hello");
+});
+
 test("First client does not wait", async t => {
     const lock = t.context.lock;
 
