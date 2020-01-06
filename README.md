@@ -49,39 +49,40 @@ await Promise.all([first, second]);
 
 ### Create instance
 
-Constructor accepts following parameters:
+Constructor parameters:
 
- - `timeout: number` (default = `3000`)
- - `base: number` (default = `1`)
- - `ceiling: number` (default = `10`)
+ 0. `timeout: number // default = 3000`
+ 1. `base: number // default = 1`
+ 2. `ceiling: number // default = 10`
 
 ```typescript
 import { LockAsync } from "@eu-ge-ne/lock-async";
 
 const lock1 = new LockAsync(3000, 1, 10);
+
 // or
+
 const lock2 = new LockAsync();
 ```
 
 ### Run async function
 
 ```typescript
-import { LockAsync } from "@eu-ge-ne/lock-async";
+import assert from "assert";
 
-const lock = new LockAsync();
+const result = await lock.run(() => new Promise(resolve => setTimeout(() => resolve("Result"), 100)));
 
-await Lock.run(() => new Promise(resolve => setTimeout(resolve, 100)));
+assert.strict.equal(result, "Result");
 ```
 
 ### Get status
 
 ```typescript
-import { LockAsync } from "@eu-ge-ne/lock-async";
-
-const lock = new LockAsync();
-
 const { locked, waiters } = lock.status();
 ```
+
+ - `locked: boolean` - lock state
+ - `waiters: number` - number of lock waiters
 
 ## License
 
