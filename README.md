@@ -1,4 +1,4 @@
-# lock-async
+# @eu-ge-ne/lock-async
 
 ## About
 
