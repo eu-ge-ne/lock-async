@@ -14,7 +14,7 @@ $ npm install @eu-ge-ne/lock-async
 
 Swap 2 values in async functions concurrently:
 
-```js
+```typescript
 import { LockAsync } from "@eu-ge-ne/lock-async";
 
 const lock = new LockAsync();
@@ -55,7 +55,7 @@ Constructor accepts following parameters:
  - `base: number` (default = `1`)
  - `ceiling: number` (default = `10`)
 
-```js
+```typescript
 import { LockAsync } from "@eu-ge-ne/lock-async";
 
 const lock1 = new LockAsync(3000, 1, 10);
@@ -65,7 +65,7 @@ const lock2 = new LockAsync();
 
 ### Run async function
 
-```js
+```typescript
 import { LockAsync } from "@eu-ge-ne/lock-async";
 
 const lock = new LockAsync();
@@ -75,7 +75,7 @@ await Lock.run(() => new Promise(resolve => setTimeout(resolve, 100)));
 
 ### Get status
 
-```js
+```typescript
 import { LockAsync } from "@eu-ge-ne/lock-async";
 
 const lock = new LockAsync();
