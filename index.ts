@@ -22,7 +22,14 @@ export class LockAsync {
 
     public async run<T>(fn: () => Promise<T>): Promise<T> {
         if (!this.locked) {
-            return await this.runFn(fn);
+            debug("run: immediately");
+            this.locked = true;
+            try {
+                return await fn();
+            }
+            finally {
+                this.locked = false;
+            }
         }
 
         this.waiters += 1;
@@ -36,12 +43,18 @@ export class LockAsync {
         const tryLock = async () => {
             if (!this.locked) {
                 this.waiters -= 1;
-                resolve(await this.runFn(fn));
+                this.locked = true;
+                try {
+                    resolve(await fn());
+                }
+                finally {
+                    this.locked = false;
+                }
                 return;
             }
 
             const timeLeft = waitUntil - Date.now();
-            debug("tryLock: attempt: %d; timeLeft: %d ms", attempt, timeLeft);
+            debug("run/tryLock: attempt: %d; timeLeft: %d ms", attempt, timeLeft);
 
             if (timeLeft <= 0) {
                 this.waiters -= 1;
@@ -66,16 +79,6 @@ export class LockAsync {
             locked: this.locked,
             waiters: this.waiters,
         };
-    }
-
-    private async runFn<T>(fn: () => Promise<T>): Promise<T> {
-        this.locked = true;
-        try {
-            return await fn();
-        }
-        finally {
-            this.locked = false;
-        }
     }
 
     private getWaitTime(attempt: number, waitUntil: number): number {
