@@ -5,6 +5,8 @@ Dead simple async lock. Written in TypeScript. With [exponential backoff](https:
 
 ###### [Install](#Install) | [Example](#Example) | [Api](#Api) | [License](#License)
 
+![](https://github.com/eu-ge-ne/lock-async/workflows/Tests/badge.svg)
+
 Install
 -------
 

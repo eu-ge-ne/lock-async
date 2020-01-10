@@ -17,7 +17,7 @@
     ],
     "scripts": {
         "build": "tsc",
-        "test": "tsc && nyc --reporter=text --reporter=html ava",
+        "test": "tsc && nyc ava",
         "prepare": "tsc",
         "prepublishOnly": "ava"
     },
