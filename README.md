@@ -1,16 +1,19 @@
-# @eu-ge-ne/lock-async
-
-## About
+@eu-ge-ne/lock-async
+====================
 
 Dead simple async lock. Written in TypeScript. With [exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)
 
-## Install
+###### [Install](#Install) | [Example](#Example) | [Api](#Api) | [License](#License)
+
+Install
+-------
 
 ```bash
 $ npm install @eu-ge-ne/lock-async
 ```
 
-## Example
+Example
+-------
 
 Swap 2 values in async functions concurrently:
 
@@ -45,7 +48,8 @@ const second = lock.run(async () => {
 await Promise.all([first, second]);
 ```
 
-## API
+API
+---
 
 ### Create instance
 
@@ -84,6 +88,7 @@ const { locked, waiters } = lock.status();
  - `locked: boolean` - lock state
  - `waiters: number` - number of lock waiters
 
-## License
+License
+-------
 
 [MIT](LICENSE)
