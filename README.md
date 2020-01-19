@@ -3,7 +3,7 @@
 
 Dead simple async lock. Written in TypeScript. With [exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff)
 
-###### [Install](#Install) | [Example](#Example) | [Api](#Api) | [License](#License)
+###### [Install](#Install) | [Example](#Example) | [API](#API) | [License](#License)
 
 ![](https://github.com/eu-ge-ne/lock-async/workflows/Tests/badge.svg)
 [![npm version](https://badge.fury.io/js/%40eu-ge-ne%2Flock-async.svg)](https://badge.fury.io/js/%40eu-ge-ne%2Flock-async)
