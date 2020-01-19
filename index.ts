@@ -37,8 +37,8 @@ export class LockAsync {
         const waitUntil = Date.now() + this.timeout;
         let attempt = 1;
 
-        let resolve: (value?: T | PromiseLike<T>) => void;
-        let reject: (reason?: any) => void;
+        let resolve: (value: T) => void;
+        let reject: (reason: Error) => void;
 
         const tryLock = async () => {
             if (!this.locked) {
@@ -68,10 +68,7 @@ export class LockAsync {
 
         setTimeout(tryLock, this.getWaitTime(attempt, waitUntil));
 
-        return new Promise<T>((res, rej) => {
-            resolve = res;
-            reject = rej;
-        });
+        return new Promise<T>((res, rej) => { resolve = res; reject = rej; });
     }
 
     public status(): Status {
