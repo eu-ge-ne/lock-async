@@ -9,7 +9,7 @@ const test = anyTest as TestInterface<{
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 test.beforeEach(t => {
-    t.context.lock = new LockAsync(100, 1, 10);
+    t.context.lock = new LockAsync(200, 1, 10);
 });
 
 test("Is a constructor", t => {
@@ -81,7 +81,7 @@ test("First client locks", async t => {
     t.false(lock.status().locked);
 });
 
-test("Throws exception from run", async t => {
+test("First throws exception from run", async t => {
     const lock = t.context.lock;
 
     await t.throwsAsync(async () => {
@@ -90,6 +90,21 @@ test("Throws exception from run", async t => {
             throw new Error("Error after waiting 10ms");
         });
     }, { instanceOf: Error, message: "Error after waiting 10ms" });
+});
+
+test("Second throws exception from run", async t => {
+    const lock = t.context.lock;
+
+    const first = lock.run(() => wait(100));
+
+    await t.throwsAsync(async () => {
+        await lock.run(async () => {
+            await wait(10);
+            throw new Error("Error after waiting 10ms");
+        });
+    }, { instanceOf: Error, message: "Error after waiting 10ms" });
+
+    await first;
 });
 
 test("Exception does unlock", async t => {
@@ -108,11 +123,11 @@ test("Exception does unlock", async t => {
 test("Second throws error after timeout", async t => {
     const lock = t.context.lock;
 
-    const first = lock.run(() => wait(150));
+    const first = lock.run(() => wait(250));
 
     await t.throwsAsync(async () => {
         await lock.run(async () => { });
-    }, { instanceOf: Error, message: "Lock timeout 100 ms" });
+    }, { instanceOf: Error, message: "Lock timeout 200 ms" });
 
     await first;
 });

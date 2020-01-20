@@ -46,6 +46,8 @@ export class LockAsync {
                 this.locked = true;
                 try {
                     resolve(await fn());
+                } catch (err) {
+                    reject(err);
                 }
                 finally {
                     this.locked = false;
