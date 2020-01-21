@@ -85,11 +85,12 @@ assert.strict.equal(result, "Result");
 ### Get status
 
 ```typescript
-const { locked, waiters } = lock.status();
+const { locked, waiters, maxLockWaitTime } = lock.status();
 ```
 
  - `locked: boolean` - lock state
  - `waiters: number` - number of lock waiters
+ - `maxLockWaitTime: number` - max time, lock spent waiting
 
 License
 -------

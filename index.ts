@@ -5,11 +5,13 @@ const debug = dbg("LockAsync");
 export type Status = {
     locked: boolean;
     waiters: number;
+    maxLockWaitTime: number;
 };
 
 export class LockAsync {
     private locked = false;
     private waiters = 0;
+    private maxLockWaitTime = 0;
 
     public constructor(
         private timeout = 3_000,
@@ -21,8 +23,7 @@ export class LockAsync {
     }
 
     public async run<T>(fn: () => Promise<T>): Promise<T> {
-        const waitUntil = Date.now() + this.timeout;
-
+        const started = Date.now();
         let attempt = 0;
         let timeLeft = 0;
 
@@ -32,6 +33,7 @@ export class LockAsync {
             if (!this.locked) {
                 debug("run: locking");
 
+                this.maxLockWaitTime = Math.max(this.maxLockWaitTime, Date.now() - started);
                 this.locked = true;
                 this.waiters -= 1;
 
@@ -44,14 +46,15 @@ export class LockAsync {
             }
 
             attempt += 1;
-            timeLeft = waitUntil - Date.now();
+            timeLeft = this.timeout - (Date.now() - started);
             debug("run: attempt: %d; timeLeft: %d ms", attempt, timeLeft);
 
             if (timeLeft > 0) {
-                await new Promise(x => setTimeout(x, this.getWaitTime(attempt, waitUntil)));
+                await new Promise(x => setTimeout(x, this.getWaitTime(attempt, timeLeft)));
             }
         } while (timeLeft > 0)
 
+        this.maxLockWaitTime = Math.max(this.maxLockWaitTime, Date.now() - started);
         this.waiters -= 1;
 
         throw new Error(`Lock timeout ${this.timeout} ms`);
@@ -61,13 +64,13 @@ export class LockAsync {
         return {
             locked: this.locked,
             waiters: this.waiters,
+            maxLockWaitTime: this.maxLockWaitTime,
         };
     }
 
-    private getWaitTime(attempt: number, waitUntil: number): number {
+    private getWaitTime(attempt: number, timeLeft: number): number {
         const c = Math.floor(Math.min(attempt, this.ceiling));
         const k = Math.floor(Math.random() * (2 ** c));
-        const timeLeft = waitUntil - Date.now();
         const waitTime = Math.min(k * this.base, timeLeft);
         debug("getWaitTime: attempt: %d; timeLeft: %d ms; waitTime: %d ms", attempt, timeLeft, waitTime);
         return waitTime;

@@ -70,6 +70,19 @@ test("Second client does wait", async t => {
     t.is(lock.status().waiters, 0);
 });
 
+test("status().maxWaitTime increases over time", async t => {
+    const lock = t.context.lock;
+
+    t.is(lock.status().maxLockWaitTime, 0);
+
+    const first = lock.run(() => wait(100));
+    await lock.run(() => wait(1));
+
+    t.assert(lock.status().maxLockWaitTime >= 100);
+
+    await first;
+});
+
 test("First client locks", async t => {
     const lock = t.context.lock;
 
