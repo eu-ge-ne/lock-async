@@ -5,13 +5,17 @@ const debug = dbg("LockAsync");
 export type Status = {
     locked: boolean;
     waiters: number;
+    maxWaiters: number;
     maxLockWaitTime: number;
+    maxLockAttempts: number;
 };
 
 export class LockAsync {
     private locked = false;
     private waiters = 0;
+    private maxWaiters = 0;
     private maxLockWaitTime = 0;
+    private maxLockAttempts = 0;
 
     public constructor(
         private timeout = 3_000,
@@ -28,8 +32,12 @@ export class LockAsync {
         let timeLeft = 0;
 
         this.waiters += 1;
+        this.maxWaiters = Math.max(this.maxWaiters, this.waiters);
 
         do {
+            attempt += 1;
+            this.maxLockAttempts = Math.max(this.maxLockAttempts, attempt);
+
             if (!this.locked) {
                 debug("run: locking");
 
@@ -45,7 +53,6 @@ export class LockAsync {
                 }
             }
 
-            attempt += 1;
             timeLeft = this.timeout - (Date.now() - started);
             debug("run: attempt: %d; timeLeft: %d ms", attempt, timeLeft);
 
@@ -64,7 +71,9 @@ export class LockAsync {
         return {
             locked: this.locked,
             waiters: this.waiters,
+            maxWaiters: this.maxWaiters,
             maxLockWaitTime: this.maxLockWaitTime,
+            maxLockAttempts: this.maxLockAttempts,
         };
     }
 

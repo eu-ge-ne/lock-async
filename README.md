@@ -90,7 +90,9 @@ const { locked, waiters, maxLockWaitTime } = lock.status();
 
  - `locked: boolean` - lock state
  - `waiters: number` - number of lock waiters
+ - `maxWaiters: number` - max waiters during lock lifetime
  - `maxLockWaitTime: number` - max time, lock spent waiting
+ - `maxLockAttempts: number` - max attempts, made during single lock
 
 License
 -------
