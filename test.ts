@@ -113,7 +113,7 @@ test("Exception does unlock", async t => {
     await t.throwsAsync(async () => {
         await lock.run(async () => {
             await wait(10);
-            throw new Error;
+            throw new Error();
         });
     });
 
