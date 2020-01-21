@@ -17,7 +17,7 @@
     ],
     "scripts": {
         "build": "tsc",
-        "test": "tsc && nyc ava",
+        "test": "tsc && nyc ava -v",
         "prepare": "tsc",
         "prepublishOnly": "ava"
     },
