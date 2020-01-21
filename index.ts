@@ -21,56 +21,40 @@ export class LockAsync {
     }
 
     public async run<T>(fn: () => Promise<T>): Promise<T> {
-        if (!this.locked) {
-            debug("run: immediately");
-            this.locked = true;
-            try {
-                return await fn();
-            }
-            finally {
-                this.locked = false;
-            }
-        }
+        const waitUntil = Date.now() + this.timeout;
+
+        let attempt = 0;
+        let timeLeft = 0;
 
         this.waiters += 1;
 
-        const waitUntil = Date.now() + this.timeout;
-        let attempt = 1;
-
-        let resolve: (value: T) => void;
-        let reject: (reason: Error) => void;
-
-        const tryLock = async () => {
+        do {
             if (!this.locked) {
-                this.waiters -= 1;
+                debug("run: locking");
+
                 this.locked = true;
+                this.waiters -= 1;
+
                 try {
-                    resolve(await fn());
-                } catch (err) {
-                    reject(err);
+                    return await fn();
                 }
                 finally {
                     this.locked = false;
                 }
-                return;
-            }
-
-            const timeLeft = waitUntil - Date.now();
-            debug("run/tryLock: attempt: %d; timeLeft: %d ms", attempt, timeLeft);
-
-            if (timeLeft <= 0) {
-                this.waiters -= 1;
-                reject(new Error(`Lock timeout ${this.timeout} ms`));
-                return;
             }
 
             attempt += 1;
-            setTimeout(tryLock, this.getWaitTime(attempt, waitUntil));
-        };
+            timeLeft = waitUntil - Date.now();
+            debug("run: attempt: %d; timeLeft: %d ms", attempt, timeLeft);
 
-        setTimeout(tryLock, this.getWaitTime(attempt, waitUntil));
+            if (timeLeft > 0) {
+                await new Promise(x => setTimeout(x, this.getWaitTime(attempt, waitUntil)));
+            }
+        } while (timeLeft > 0)
 
-        return new Promise<T>((res, rej) => { resolve = res; reject = rej; });
+        this.waiters -= 1;
+
+        throw new Error(`Lock timeout ${this.timeout} ms`);
     }
 
     public status(): Status {
